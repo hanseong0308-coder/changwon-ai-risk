@@ -57,7 +57,43 @@ st.divider()
 
 # 위험지역
 st.header("🚨 AI 예측 위험지역")
+# 위험지역 시각화 카드
 
+st.subheader("🔴 주요 위험지역")
+
+top_risk = final_result.head(10)
+
+for i, (_, row) in enumerate(top_risk.iterrows(), 1):
+    place = row["단속장소"]
+    score = row["위험점수"]
+    grade = row["위험등급"]
+    district = row["구_y"]
+
+    st.markdown(
+        f"""
+        <div style="
+            background:white;
+            border-left:6px solid #e5484d;
+            padding:16px 20px;
+            margin:8px 0;
+            border-radius:12px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.08);
+        ">
+            <b style="font-size:19px;">
+                #{i} {place}
+            </b>
+            <br>
+            <span style="color:#667085;">
+                {district} · 위험등급 {grade}
+            </span>
+            <br>
+            <span style="font-size:17px;">
+                🎯 위험점수 <b>{score:.1f}</b>
+            </span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 st.dataframe(
     final_result[
         [
