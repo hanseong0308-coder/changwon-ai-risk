@@ -316,48 +316,6 @@ risk_map = folium.Map(
     tiles="OpenStreetMap"
 )
 
-# 위험지역 표시
-for _, row in map_points.iterrows():
-
-    score = float(row["위험점수"])
-
-    if score >= 80:
-        color = "#ff2b2b"
-        radius = 12
-    elif score >= 60:
-        color = "#ff9800"
-        radius = 9
-    else:
-        color = "#22c55e"
-        radius = 7
-
-    
-
-    # 위험지역 핵심 포인트
-    folium.CircleMarker(
-        location=[
-            float(row["위도"]),
-            float(row["경도"])
-        ],
-        radius=radius,
-        color=color,
-        fill=True,
-        fill_color=color,
-        fill_opacity=0.9,
-        weight=3,
-        popup=folium.Popup(
-            f"""
-            <div style="font-size:14px;">
-                <b>🚨 {row['단속장소']}</b><br>
-                위험점수: <b>{score:.1f}</b><br>
-                위험등급: <b>{row['위험등급']}</b><br>
-                위험시간: {row.get('위험시간', '정보 없음')}<br>
-                추천대응: {row['추천대응']}
-            </div>
-            """,
-            max_width=320
-        )
-    ).add_to(risk_map)
 
 # 지도 범례
 legend_html = """
@@ -381,7 +339,54 @@ legend_html = """
     낮음 (60 미만)
 </div>
 """
+# 위험지역 표시
+for _, row in map_points.iterrows():
 
+    score = float(row["위험점수"])
+
+    if score >= 80:
+        color = "#ff2b2b"
+        radius = 12
+    elif score >= 60:
+        color = "#ff9800"
+        radius = 9
+    else:
+        color = "#22c55e"
+        radius = 7
+
+    # 같은 좌표의 마커만 지도에서 살짝 분리
+    lat = float(row["위도"])
+    lon = float(row["경도"])
+
+    if row["단속장소"] == "용동창원중앙역승강장":
+        lat += 0.0010
+        lon += 0.0010
+
+    elif row["단속장소"] == "용동창원중앙역회전차로":
+        lat -= 0.0010
+        lon -= 0.0010
+
+    folium.CircleMarker(
+        location=[lat, lon],
+        radius=radius,
+        color=color,
+        fill=True,
+        fill_color=color,
+        fill_opacity=0.9,
+        weight=3,
+        popup=folium.Popup(
+            f"""
+            <div style="font-size:14px;">
+                <b>🚨 {row['단속장소']}</b><br>
+                위험점수: <b>{score:.1f}</b><br>
+                위험등급: <b>{row['위험등급']}</b><br>
+                위험시간: {row.get('위험시간', '정보 없음')}<br>
+                추천대응: {row['추천대응']}
+            </div>
+            """,
+            max_width=320
+        )
+    ).add_to(risk_map)
 risk_map.get_root().html.add_child(
     folium.Element(legend_html)
 )
