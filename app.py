@@ -1,7 +1,7 @@
-
 import streamlit as st
 import pandas as pd
 import os
+import folium
 
 st.set_page_config(
     page_title="창원 AI 생활안전 레이더",
@@ -44,7 +44,7 @@ geocode_result = pd.read_csv(
 )
 
 geocode_result.columns = geocode_result.columns.astype(str).str.strip()
-st.write("지도 데이터 컬럼:", geocode_result.columns.tolist())
+
 geocode_result["위도"] = pd.to_numeric(
     geocode_result["위도"], errors="coerce"
 )
@@ -277,21 +277,24 @@ st.divider()
 
 st.header("🗺️ 창원시 AI 위험 레이더")
 
-import folium
 from streamlit.components.v1 import html as st_html
 
-# 위험점수와 좌표 연결
-map_points = geocode_result.merge(
-    final_result[
-        [
-            "단속장소",
-            "위험점수",
-            "위험등급",
-            "추천대응"
-        ]
-    ],
-    on="단속장소",
-    how="inner"
+# 지도 데이터 준비
+map_points = geocode_result.copy()
+
+map_points["위도"] = pd.to_numeric(
+    map_points["위도"],
+    errors="coerce"
+)
+
+map_points["경도"] = pd.to_numeric(
+    map_points["경도"],
+    errors="coerce"
+)
+
+map_points["위험점수"] = pd.to_numeric(
+    map_points["위험점수"],
+    errors="coerce"
 )
 
 map_points = map_points.dropna(
