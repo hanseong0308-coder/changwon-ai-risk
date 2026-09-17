@@ -19,7 +19,6 @@ st.markdown(
     행정의 선제적 대응을 지원하는 데이터 기반 플랫폼입니다.
     """
 )
-st.subheader("민원이 발생한 뒤가 아니라, 발생하기 전에 대응하는 창원")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
