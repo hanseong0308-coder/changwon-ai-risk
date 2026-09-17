@@ -271,3 +271,23 @@ c1.metric("분석 대상 장소", "1,089곳")
 c2.metric("고위험 장소", "3곳")
 c3.metric("최고 위험점수", "100.0")
 c4.metric("모델 R²", "0.400")
+st.divider()
+
+st.subheader("🗺️ 창원시 위험지역 위치")
+
+if "위도" in geocode_result.columns and "경도" in geocode_result.columns:
+
+    map_view = geocode_result.copy()
+
+    map_view["위도"] = pd.to_numeric(map_view["위도"], errors="coerce")
+    map_view["경도"] = pd.to_numeric(map_view["경도"], errors="coerce")
+
+    map_view = map_view.dropna(subset=["위도", "경도"])
+
+    st.map(
+        map_view[["위도", "경도"]],
+        use_container_width=True
+    )
+
+else:
+    st.info("위험지역 위치 데이터가 없습니다.")
