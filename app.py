@@ -98,3 +98,15 @@ for i, (_, row) in enumerate(top_risk.iterrows(), 1):
         """,
         unsafe_allow_html=True
     )
+st.divider()
+
+st.subheader("📊 위험도 분포")
+
+risk_chart = (
+    final_result["위험등급"]
+    .value_counts()
+    .reindex(["높음", "보통", "낮음"])
+    .fillna(0)
+)
+
+st.bar_chart(risk_chart)
