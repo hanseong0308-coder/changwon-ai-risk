@@ -56,6 +56,12 @@ geocode_result["경도"] = pd.to_numeric(
 geocode_result = geocode_result.dropna(
     subset=["위도", "경도"]
 ).copy()
+st.write("📍 원본 좌표 수:", len(geocode_result))
+st.write(
+    geocode_result[
+        ["단속장소", "위도", "경도"]
+    ].head(10)
+)
 # KPI
 col1, col2, col3, col4 = st.columns(4)
 
