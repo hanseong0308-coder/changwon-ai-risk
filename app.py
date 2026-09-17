@@ -323,19 +323,7 @@ for _, row in map_points.iterrows():
         color = "#22c55e"
         radius = 7
 
-    # 위험지역 원형
-    folium.Circle(
-        location=[
-            float(row["위도"]),
-            float(row["경도"])
-        ],
-        radius=radius * 18,
-        color=color,
-        fill=True,
-        fill_color=color,
-        fill_opacity=0.12,
-        weight=2
-    ).add_to(risk_map)
+    
 
     # 위험지역 핵심 포인트
     folium.CircleMarker(
