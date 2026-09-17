@@ -37,7 +37,25 @@ model_performance = pd.read_csv(
     os.path.join(BASE_DIR, "model_performance.csv"),
     encoding="utf-8-sig"
 )
+# 지도 좌표 데이터 불러오기
+geocode_result = pd.read_csv(
+    os.path.join(BASE_DIR, "geocode_result.csv"),
+    encoding="utf-8-sig"
+)
 
+geocode_result.columns = geocode_result.columns.astype(str).str.strip()
+
+geocode_result["위도"] = pd.to_numeric(
+    geocode_result["위도"], errors="coerce"
+)
+
+geocode_result["경도"] = pd.to_numeric(
+    geocode_result["경도"], errors="coerce"
+)
+
+geocode_result = geocode_result.dropna(
+    subset=["위도", "경도"]
+).copy()
 # KPI
 col1, col2, col3, col4 = st.columns(4)
 
