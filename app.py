@@ -99,3 +99,91 @@ st.caption(
     "※ 본 모델의 예측 대상은 다음날 주정차 단속건수이며, "
     "생활불편 위험을 나타내는 대리 지표(proxy)로 활용했습니다."
 )
+st.divider()
+
+st.header("🎯 AI 위험 레이더")
+
+# 최고 위험점수
+max_risk = float(
+    pd.to_numeric(
+        final_result["위험점수"],
+        errors="coerce"
+    ).max()
+)
+
+# 0~100 범위로 제한
+risk = max(0, min(100, max_risk))
+
+# 레이더 게이지
+import streamlit.components.v1 as components
+
+html = f"""
+<div style="
+    background:white;
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    border:1px solid #dddddd;
+">
+<svg width="100%" height="300" viewBox="0 0 600 300">
+
+<circle
+    cx="300"
+    cy="150"
+    r="105"
+    fill="none"
+    stroke="#eeeeee"
+    stroke-width="22"
+/>
+
+<circle
+    cx="300"
+    cy="150"
+    r="105"
+    fill="none"
+    stroke="#e5484d"
+    stroke-width="22"
+    stroke-linecap="round"
+    stroke-dasharray="{risk * 6.60} 660"
+    transform="rotate(-90 300 150)"
+/>
+
+<circle
+    cx="300"
+    cy="150"
+    r="75"
+    fill="#f8f9fa"
+/>
+
+<text
+    x="300"
+    y="145"
+    text-anchor="middle"
+    font-size="42"
+    font-weight="bold"
+    fill="#222222">
+    {risk:.1f}
+</text>
+
+<text
+    x="300"
+    y="175"
+    text-anchor="middle"
+    font-size="15"
+    fill="#666666">
+    AI 위험점수
+</text>
+
+</svg>
+
+<div style="
+    font-size:16px;
+    color:#666666;
+">
+다음날 주정차 단속 위험 기반
+</div>
+
+</div>
+"""
+
+components.html(html, height=340)
