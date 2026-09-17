@@ -301,6 +301,8 @@ map_points = map_points.dropna(
     subset=["위도", "경도", "위험점수"]
 ).copy()
 
+st.write("📍 지도에 표시할 좌표 수:", len(map_points))
+
 # 창원 중심 지도
 risk_map = folium.Map(
     location=[35.2281, 128.6811],
