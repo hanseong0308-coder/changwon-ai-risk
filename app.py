@@ -44,7 +44,7 @@ geocode_result = pd.read_csv(
 )
 
 geocode_result.columns = geocode_result.columns.astype(str).str.strip()
-
+st.write("지도 데이터 컬럼:", geocode_result.columns.tolist())
 geocode_result["위도"] = pd.to_numeric(
     geocode_result["위도"], errors="coerce"
 )
