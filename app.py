@@ -252,3 +252,13 @@ html = f"""
 """
 
 components.html(html, height=340)
+st.divider()
+
+st.subheader("📌 창원시 AI 위험예측 핵심지표")
+
+c1, c2, c3, c4 = st.columns(4)
+
+c1.metric("분석 대상 장소", "1,089곳")
+c2.metric("고위험 장소", "3곳")
+c3.metric("최고 위험점수", "100.0")
+c4.metric("모델 R²", "0.400")
