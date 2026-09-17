@@ -273,3 +273,81 @@ st.info(
     "💡 핵심 가치: 민원이 발생한 뒤 대응하는 것이 아니라, "
     "데이터를 활용해 위험 가능성을 미리 파악하고 행정 대응을 앞당깁니다."
 )
+st.divider()
+
+st.header("🗺️ 창원시 AI 위험 레이더")
+
+import folium
+from streamlit.components.v1 import html as st_html
+
+# 위험점수와 좌표 연결
+map_points = geocode_result.merge(
+    final_result[
+        [
+            "단속장소",
+            "위험점수",
+            "위험등급",
+            "추천대응"
+        ]
+    ],
+    on="단속장소",
+    how="inner"
+)
+
+map_points = map_points.dropna(
+    subset=["위도", "경도", "위험점수"]
+).copy()
+
+# 창원 중심 지도
+risk_map = folium.Map(
+    location=[35.2281, 128.6811],
+    zoom_start=11,
+    tiles="OpenStreetMap"
+)
+
+# 위험지역 표시
+for _, row in map_points.iterrows():
+
+    score = float(row["위험점수"])
+
+    if score >= 80:
+        color = "red"
+    elif score >= 60:
+        color = "orange"
+    else:
+        color = "green"
+
+    folium.CircleMarker(
+        location=[
+            float(row["위도"]),
+            float(row["경도"])
+        ],
+        radius=8 if score >= 80 else 6,
+        color=color,
+        fill=True,
+        fill_color=color,
+        fill_opacity=0.75,
+        popup=folium.Popup(
+            f"""
+            <b>{row['단속장소']}</b><br>
+            위험점수: {score:.1f}<br>
+            위험등급: {row['위험등급']}<br>
+            추천대응: {row['추천대응']}
+            """,
+            max_width=300
+        )
+    ).add_to(risk_map)
+
+# 지도 표시
+map_html = risk_map._repr_html_()
+
+st_html(
+    map_html,
+    height=650,
+    scrolling=False
+)
+
+st.caption(
+    "🔴 높음 · 🟠 보통 · 🟢 낮음 | "
+    "실제 좌표가 확인된 위험지역을 지도에 표시합니다."
+)
