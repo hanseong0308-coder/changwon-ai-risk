@@ -110,3 +110,22 @@ risk_chart = (
 )
 
 st.bar_chart(risk_chart)
+st.divider()
+
+st.subheader("🚨 AI 선제대응 TOP 10")
+
+action_cols = [
+    "우선순위",
+    "구_y",
+    "단속장소",
+    "위험점수",
+    "위험등급",
+    "위험시간",
+    "추천대응"
+]
+
+st.dataframe(
+    final_result[action_cols].head(10),
+    use_container_width=True,
+    hide_index=True
+)
