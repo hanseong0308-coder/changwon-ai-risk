@@ -60,7 +60,18 @@ st.header("🚨 AI 예측 위험지역")
 # 위험지역 시각화 카드
 
 st.subheader("🔴 주요 위험지역")
+st.divider()
 
+st.subheader("📊 위험도 분포")
+
+risk_chart = (
+    final_result["위험등급"]
+    .value_counts()
+    .reindex(["높음", "보통", "낮음"])
+    .fillna(0)
+)
+
+st.bar_chart(risk_chart)
 top_risk = final_result.head(10)
 
 for i, (_, row) in enumerate(top_risk.iterrows(), 1):
