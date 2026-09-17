@@ -314,43 +314,92 @@ for _, row in map_points.iterrows():
     score = float(row["위험점수"])
 
     if score >= 80:
-        color = "red"
+        color = "#ff2b2b"
+        radius = 12
     elif score >= 60:
-        color = "orange"
+        color = "#ff9800"
+        radius = 9
     else:
-        color = "green"
+        color = "#22c55e"
+        radius = 7
 
+    # 위험지역 원형
+    folium.Circle(
+        location=[
+            float(row["위도"]),
+            float(row["경도"])
+        ],
+        radius=radius * 18,
+        color=color,
+        fill=True,
+        fill_color=color,
+        fill_opacity=0.12,
+        weight=2
+    ).add_to(risk_map)
+
+    # 위험지역 핵심 포인트
     folium.CircleMarker(
         location=[
             float(row["위도"]),
             float(row["경도"])
         ],
-        radius=8 if score >= 80 else 6,
+        radius=radius,
         color=color,
         fill=True,
         fill_color=color,
-        fill_opacity=0.75,
+        fill_opacity=0.9,
+        weight=3,
         popup=folium.Popup(
             f"""
-            <b>{row['단속장소']}</b><br>
-            위험점수: {score:.1f}<br>
-            위험등급: {row['위험등급']}<br>
-            추천대응: {row['추천대응']}
+            <div style="font-size:14px;">
+                <b>🚨 {row['단속장소']}</b><br>
+                위험점수: <b>{score:.1f}</b><br>
+                위험등급: <b>{row['위험등급']}</b><br>
+                위험시간: {row.get('위험시간', '정보 없음')}<br>
+                추천대응: {row['추천대응']}
+            </div>
             """,
-            max_width=300
+            max_width=320
         )
     ).add_to(risk_map)
+
+# 지도 범례
+legend_html = """
+<div style="
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    z-index: 9999;
+    background: white;
+    padding: 15px 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    font-size: 14px;
+">
+    <b>🚨 AI 위험등급</b><br><br>
+    <span style="color:#ff2b2b;">●</span>
+    높음 (80 이상)<br>
+    <span style="color:#ff9800;">●</span>
+    보통 (60~79)<br>
+    <span style="color:#22c55e;">●</span>
+    낮음 (60 미만)
+</div>
+"""
+
+risk_map.get_root().html.add_child(
+    folium.Element(legend_html)
+)
 
 # 지도 표시
 map_html = risk_map._repr_html_()
 
 st_html(
     map_html,
-    height=650,
+    height=700,
     scrolling=False
 )
 
 st.caption(
-    "🔴 높음 · 🟠 보통 · 🟢 낮음 | "
-    "실제 좌표가 확인된 위험지역을 지도에 표시합니다."
+    "실제 좌표가 확보된 위험지역을 기준으로 AI 위험점수와 "
+    "위험등급을 지도에 시각화합니다."
 )
